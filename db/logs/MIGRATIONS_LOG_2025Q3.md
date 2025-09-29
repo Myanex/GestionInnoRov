@@ -60,4 +60,21 @@ Recordatorios clave
 Recordatorios clave
 - `maestros_centro` es prerequisito para la vista de comunicación y para filtros por zona.
 
+## 2025-09-29 20:00 America/Santiago
+- Files:
+  - `db/migrations/2025-09-29_02_f1_pilotos_hardening.sql`
+  - `db/migrations/2025-09-29_03_f1_rebuild_vista_y_smoke.sql`
+  - `db/preflight/2025-09-29_f1_smoketest_vista.sql`
+- Commit: `<sha>`
+- Resultado: OK
+- Notas:
+  - Hardening `public.pilotos`: DEFAULT `id=gen_random_uuid()`, trigger `updated_at`, secuencia `pilotos_codigo_seq`, FKs coherentes (`empresa_id`/`centro_id`), RLS `f1_*` repuestas.
+  - Rebuild `v_comunicacion_zona` con resumen por empresa/centro (basada en `pilotos`), RLS heredado.
+  - Seed forzado: +3 pilotos válidos (`nombre`, `apellido_paterno`, `rut`, `email`, enum `con_centro/sin_centro`), total visibles=6.
+  - Preflight smoke devuelve totales >0 para admin/dev/oficina/centro.
+- Tag: `f1-pilotos`
+Recordatorios clave
+- Si `Catalogos.txt` fija más estados/situaciones, migrar enum en F2.
+- Frontend puede consumir `v_comunicacion_zona.pilotos_json` directo.
+
 
