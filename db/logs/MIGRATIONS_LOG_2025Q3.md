@@ -77,4 +77,24 @@ Recordatorios clave
 - Si `Catalogos.txt` fija más estados/situaciones, migrar enum en F2.
 - Frontend puede consumir `v_comunicacion_zona.pilotos_json` directo.
 
+## 2025-09-29 12:30 America/Santiago
+- Files: `db/seeds/2025-09-29_00_seed_demo_empresas_centros.sql`
+- Commit: `seed(db): demo empresas+centros (idempotente, zonas/slug-safe)`
+- Resultado: OK
+- Notas: crea 1 empresa y 2 centros en la misma zona si faltan (maneja FK a zonas y slug NOT NULL).
+
+## 2025-09-29 13:15 America/Santiago
+- Files: `db/migrations/2025-09-29_04_fix_view_comunicacion_resiliente.sql`
+- Commit: `fix(db): v_comunicacion_zona tolera pilotos sin nombre/activo y sin empresa_id`
+- Resultado: OK
+
+## 2025-09-29 13:40 America/Santiago
+- Files: `db/migrations/2025-09-29_05_fix_debug_claims_visibility.sql`
+- Commit: `fix(db): debug claims a nivel de sesión (visibles para SECURITY DEFINER)`
+- Resultado: OK
+
+## 2025-09-29 13:50 America/Santiago
+- Files: `db/migrations/2025-09-29_06_debug_run_as.sql`
+- Commit: `feat(db): wrapper app.v_comunicacion_zona_as(claims)`
+- Resultado: OK
 
