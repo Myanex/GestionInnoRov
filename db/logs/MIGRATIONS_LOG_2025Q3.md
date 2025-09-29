@@ -147,3 +147,16 @@ Recordatorios clave
   - Prueba mínima: `SELECT COUNT(*) FROM empresas/centros/zonas` y vista `v_comunicacion_zona` con filas.
 - Tag: seed-demo-centros
 
+## 2025-09-29 14:55 America/Santiago
+- Files: `db/migrations/2025-09-29_02_f1_pilotos_consolidado.sql`
+- Commit: `<hash>`
+- Resultado: OK
+- Notas:
+  - Consolidado F1: perfiles bootstrap, pilotos + trigger sync, índices, RLS f1_*, v2 role-aware (función+vista+wrapper) y smoke.
+  - Sustituye hotfixes 03/05/06/07/08/10/11/12 (archivados).
+- Tag: f1-pilotos
+Recordatorios:
+- Mantener seeds `seed_test` / `seed_demo` ya aplicados.
+- Evaluar quitar DEFAULT en `pilotos.id` y agregar FK estricta a `perfiles(id)` en F1.1.
+- Documentar `estado/situacion` en Catalogos.txt para futura validación.
+
