@@ -98,3 +98,52 @@ Recordatorios clave
 - Commit: `feat(db): wrapper app.v_comunicacion_zona_as(claims)`
 - Resultado: OK
 
+## 2025-09-29 12:20 America/Santiago
+- Files: `2025-09-29_03_merge_maestros_to_canonic.sql`
+- Commit: pending
+- Resultado: OK
+- Notas:
+  - Normalización a tablas canónicas (`empresas`, `centros`) y creación de vistas alias `maestros_*`.
+  - RLS activa en canónicas con policies `f0_*`.
+  - Prueba mínima: SELECT por rol `centro` en `maestros_*` respeta RLS (heredada).
+- Tag: f0-merge-maestros
+
+## 2025-09-29 12:28 America/Santiago
+- Files: `2025-09-29_04_fix_view_comunicacion_resiliente.sql`
+- Commit: pending
+- Resultado: OK
+- Notas:
+  - `app.v_comunicacion_zona()` robustecida (lee de `public.centros` y tolera `pilotos` incompleto).
+  - `public.v_comunicacion_zona` como wrapper.
+  - Prueba mínima: SELECT por `oficina` y `centro` devuelve filas ≥2 (demo).
+- Tag: f0-view-comunicacion
+
+## 2025-09-29 12:34 America/Santiago
+- Files: `2025-09-29_05_fix_debug_claims_visibility.sql`
+- Commit: pending
+- Resultado: OK
+- Notas:
+  - `app_set_debug_claims()` / `app_clear_debug_claims()` a nivel de sesión.
+  - Confirmado alcance desde funciones SECURITY DEFINER.
+  - Prueba mínima: set → vista devuelve ámbito simulado → clear.
+- Tag: f0-debug-claims
+
+## 2025-09-29 12:40 America/Santiago
+- Files: `2025-09-29_06_debug_run_as.sql`
+- Commit: pending
+- Resultado: OK
+- Notas:
+  - Wrapper `app.v_comunicacion_zona_as(claims jsonb)` para QA/demos.
+  - Prueba mínima: ejecutar con claims de `centro` y `oficina`, resultados esperados.
+- Tag: f0-run-as-wrapper
+
+## 2025-09-29 12:46 America/Santiago
+- Files: `db/seeds/2025-09-29_00_seed_demo_empresas_centros.sql`
+- Commit: pending
+- Resultado: OK
+- Notas:
+  - Seed idempotente: 1 empresa + 2 centros en la misma zona (respeta FKs y `slug`).
+  - Safe-fail si `zonas` tiene NOT NULL extra (mensaje claro).
+  - Prueba mínima: `SELECT COUNT(*) FROM empresas/centros/zonas` y vista `v_comunicacion_zona` con filas.
+- Tag: seed-demo-centros
+
