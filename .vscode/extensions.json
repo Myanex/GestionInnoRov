@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-ossdata.vscode-postgresql",
+    "EditorConfig.EditorConfig",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens"
+  ]
+}

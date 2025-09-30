@@ -1,0 +1,16 @@
+{
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // SQL
+  "pgsql.languageServerEnabled": true,
+  "pgsql.omnibox.enableSuggestions": true,
+
+  // Terminal: usar Git Bash por defecto en Windows
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  // Trimming seguro
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}
