@@ -160,3 +160,29 @@ Recordatorios:
 - Evaluar quitar DEFAULT en `pilotos.id` y agregar FK estricta a `perfiles(id)` en F1.1.
 - Documentar `estado/situacion` en Catalogos.txt para futura validación.
 
+## 2025-09-29 16:00 America/Santiago
+- Files: `db/migrations/2025-09-29_07_f2_invariantes_equipos.sql`
+- Commit: <hash>
+- Resultado: OK
+- Notas:
+  - Funciones y triggers de invariantes (único ROV, 1 controlador/umbilical, disolución por baja).
+  - Denormalización `equipos.rov_componente_id`.
+  - Smoke básico aprobado (ver `db/preflight/...`).
+- Tag: f2-invariantes
+
+## 2025-09-29 17:00 America/Santiago
+- Files: `db/migrations/2025-09-29_07b_f2_fix_enums.sql`
+- Commit: <hash>
+- Resultado: OK
+- Notas:
+  - Comparaciones de enums convertidas a texto para robustez multi-ambiente.
+- Tag: f2-enum-fix
+
+## 2025-09-29 18:45 America/Santiago
+- Files: `db/maintenance/2025-09-29_f2_repair_historial.sql`, `db/views/2025-09-29_v_audit_f2_invariantes.sql`
+- Commit: <hash>
+- Resultado: OK
+- Notas:
+  - Reparación histórica (duplicados, resync ubicaciones) y vista de auditoría continua (0 violaciones).
+- Tag: f2-repair, f2-audit
+
