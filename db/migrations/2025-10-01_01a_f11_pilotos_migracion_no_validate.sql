@@ -39,7 +39,7 @@ BEGIN
 END$$;
 
 -- STEP: 2. FK 1:1 desde perfiles(id) hacia pilotos(id) (NOT VALID + VALIDATE)
-DO $$
+/*DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -64,7 +64,7 @@ BEGIN
   ELSE
     RAISE NOTICE 'FK fk_perfiles_id_pilotos ya existe (ok)';
   END IF;
-END$$;
+END$$;*/
 
 -- STEP: 2.1 VALIDATE CONSTRAINT si estaba NOT VALID
 DO $$
