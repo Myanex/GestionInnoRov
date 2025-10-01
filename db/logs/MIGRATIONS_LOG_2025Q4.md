@@ -22,3 +22,15 @@
   - Perfiles sin piloto: 2 (se mantienen; esperado para roles admin/dev/oficina).
   - Transacción con pg_advisory_xact_lock y SET LOCAL; cast dinámico al enum.
 - Tag: f1.1-prep-backfill
+
+## 2025-10-01 17:xx America/Santiago
+
+- Files: (auditoría) perfiles sin piloto
+- Commit: n/a
+- Resultado: OK (observación)
+- Notas:
+  - 2 perfiles sin piloto:
+    - oficina (id=00000000-0000-0000-0000-000000000010) — esperado.
+    - centro (id=beb727ae-9a72-46e1-b5a1-1bd0875f3b09) — pendiente de datos mínimos.
+  - No se hizo inserción en `pilotos` por faltar campos NOT NULL (nombre, apellido_paterno, rut, email).
+- Tag: f1.1-prep-observaciones
