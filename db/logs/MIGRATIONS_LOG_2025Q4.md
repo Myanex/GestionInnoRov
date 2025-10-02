@@ -71,3 +71,17 @@
     - centro (id=beb727ae-9a72-46e1-b5a1-1bd0875f3b09) — pendiente de datos mínimos.
   - No se hizo inserción en `pilotos` por faltar campos NOT NULL (nombre, apellido_paterno, rut, email).
 - Tag: f1.1-prep-observaciones
+
+## 2025-10-02 19:xx America/Santiago
+- Files:
+  - preflight: db/preflight/2025-10-02_00_f12_pilotos_fk_reverse_preflight.sql
+  - migración: db/migrations/2025-10-02_01_f12_pilotos_fk_reverse.sql
+  - smoke: db/preflight/2025-10-02_02_f12_pilotos_fk_reverse_smoke.sql
+- Commit: <sha>  <!-- git rev-parse --short HEAD -->
+- Resultado: OK
+- Notas:
+  - FK nueva `pilotos(id) → perfiles(id)` creada y VALIDADA (ON UPDATE CASCADE, ON DELETE RESTRICT).
+  - FK antigua `perfiles(id) → pilotos(id)` eliminada.
+  - Trigger `tg_pilotos_sync_empresa_from_centro_biu` operativo (smoke `empresa_match = true`).
+  - `pilotos_sin_perfil = 0`; `perfiles_sin_piloto = 2` (roles no-piloto/centro sin datos).
+- Tag: f1.2
