@@ -96,3 +96,12 @@
   - Smoke: pilotos_sin_perfil=0; perfiles_sin_piloto=1 (queda el de oficina).
 - Tag: f1.2.1
 
+## 2025-10-02 20:xx America/Santiago
+- Files: (maintenance) alta de piloto desde perfil rol='centro'
+- Commit: n/a
+- Resultado: OK
+- Notas:
+  - Insert idempotente en `public.pilotos` heredando `empresa_id/centro_id` desde `perfiles`.
+  - Smoke: `pilotos_sin_perfil = 0`; `perfiles_sin_piloto = 1` (queda el de oficina).
+- Tag: f1.2.1
+
