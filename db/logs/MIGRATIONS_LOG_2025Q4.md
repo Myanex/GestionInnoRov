@@ -85,3 +85,14 @@
   - Trigger `tg_pilotos_sync_empresa_from_centro_biu` operativo (smoke `empresa_match = true`).
   - `pilotos_sin_perfil = 0`; `perfiles_sin_piloto = 2` (roles no-piloto/centro sin datos).
 - Tag: f1.2
+- 
+## 2025-10-02 20:xx America/Santiago
+- Files: (maintenance) alta de piloto desde perfil rol='centro'
+- Commit: n/a
+- Resultado: OK
+- Notas:
+  - Insert idempotente de public.pilotos (hereda empresa/centro desde perfiles).
+  - Checks previos: perfil existe y es rol 'centro'; RUT no duplicado (normalizado).
+  - Smoke: pilotos_sin_perfil=0; perfiles_sin_piloto=1 (queda el de oficina).
+- Tag: f1.2.1
+
