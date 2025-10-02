@@ -38,19 +38,16 @@ BEGIN;
 SET LOCAL search_path = public, app;
 
 WITH p AS (SELECT id FROM public.pilotos LIMIT 1),
-     c AS (SELECT id, empresa_id FROM public.centros LIMIT 1)
-UPDATE public.pilotos t
-   SET centro_id = c.id
-  FROM p, c
- WHERE t.id = p.id;
-
-select 'empresa_match_after_trigger' as check,
-       json_build_object(
-         'match',
-         (select (t.empresa_id = c.empresa_id)
-            from public.pilotos t, c
-           where t.id = (select id from p))
-       ) as value,
-       ''::text as details;
+     c AS (SELECT id, empresa_id FROM public.centros LIMIT 1),
+     u AS (
+       UPDATE public.pilotos t
+          SET centro_id = c.id
+         FROM p, c
+        WHERE t.id = p.id
+       RETURNING t.id, t.empresa_id
+     )
+SELECT 'empresa_match_after_trigger' AS check,
+       json_build_object('match', (SELECT u.empresa_id = c.empresa_id FROM u, c)) AS value,
+       ''::text AS details;
 
 ROLLBACK;
