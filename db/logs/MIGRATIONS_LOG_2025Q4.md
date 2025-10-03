@@ -49,3 +49,17 @@
   - Uso cualificado de `public.centros` confirmado.
   - Smoke: `empresa_match_after_trigger = true`; FK `pilotos(id)→perfiles(id)` continúa validada.
 - Tag: f1.3
+
+## 2025-10-02 22:xx America/Santiago
+
+- Files:
+  - preflight: db/preflight/2025-10-02_00_f14_rut_norm_preflight.sql
+  - migración: db/migrations/2025-10-02_01_f14_rut_norm.sql
+  - smoke: db/preflight/2025-10-02_02_f14_rut_norm_smoke.sql
+- Commit: <sha> <!-- git rev-parse --short HEAD -->
+- Resultado: OK
+- Notas:
+  - Índice UNIQUE por RUT normalizado creado: ux_pilotos_rut_norm
+  - Normalización: lower(regexp_replace(rut, '[^0-9kK]', '', 'g')), filtrando NULL/vacíos
+  - Smoke: rut_norm_unique_enforced = true
+- Tag: f1.4
