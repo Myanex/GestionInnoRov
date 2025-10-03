@@ -35,6 +35,34 @@
   - No se hizo inserción en `pilotos` por faltar campos NOT NULL (nombre, apellido_paterno, rut, email).
 - Tag: f1.1-prep-observaciones
 
+## 2025-10-02 21:xx America/Santiago
+
+- Files:
+  - preflight: db/preflight/2025-10-02_00_f13_rls_trigger_preflight.sql
+  - migración: db/migrations/2025-10-02_01_f13_rls_trigger.sql
+  - smoke: db/preflight/2025-10-02_02_f13_rls_trigger_smoke.sql
+- Commit: <sha> <!-- git rev-parse --short HEAD -->
+- Resultado: OK
+- Notas:
+  - Función del trigger como SECURITY DEFINER + `SET search_path = pg_catalog, public`.
+  - Trigger `tg_pilotos_sync_empresa_from_centro_biu` apuntando a `public.fn_pilotos_sync_empresa_from_centro()`.
+  - Uso cualificado de `public.centros` confirmado.
+  - Smoke: `empresa_match_after_trigger = true`; FK `pilotos(id)→perfiles(id)` continúa validada.
+- Tag: f1.3
+
+## 2025-10-02 22:xx America/Santiago
+
+- Files:
+  - preflight: db/preflight/2025-10-02_00_f14_rut_norm_preflight.sql
+  - migración: db/migrations/2025-10-02_01_f14_rut_norm.sql
+  - smoke: db/preflight/2025-10-02_02_f14_rut_norm_smoke.sql
+- Commit: <sha> <!-- git rev-parse --short HEAD -->
+- Resultado: OK
+- Notas:
+  - Índice UNIQUE por RUT normalizado creado: ux_pilotos_rut_norm
+  - Normalización: lower(regexp_replace(rut, '[^0-9kK]', '', 'g')), filtrando NULL/vacíos
+  - Smoke: rut_norm_unique_enforced = true
+- Tag: f1.4
 ## 2025-10-01 15:xx America/Santiago
 
 - Files: (preflight de inventario — solo lectura)
