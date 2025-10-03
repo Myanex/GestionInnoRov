@@ -1,40 +1,17 @@
 -- =====================================================================
--- F3 · RPC MOVIMIENTOS (COMPLETO): crear / enviar / recibir / cancelar
--- Archivo sugerido: db/migrations/2025-10-03_01_f3_rpc_movimientos.sql
--- ---------------------------------------------------------------------
--- Contracto (payload de rpc_mov_crear) — Catálogo alineado
---   {
---     "objeto_tipo": "equipo" | "componente",
---     "objeto_id":   "<uuid>",
---     "origen_tipo":  "centro" | "bodega" | "oficina" | "reparacion_externa",
---     "origen_detalle":  "<slug/nombre>",
---     "destino_tipo": "centro" | "bodega" | "oficina" | "reparacion_externa",
---     "destino_detalle": "<slug/nombre>"
---   }
--- Estados
---   pendiente → (enviar) → enviado → (recibir) → recibido
---   cancelar: permitido en pendiente|enviado → cancelado
--- Seguridad
---   SECURITY INVOKER (respeta RLS). Subir a DEFINER solo si un control sistémico lo exige.
--- Concurrencia
---   • pg_advisory_xact_lock por OBJETO en crear (hash estable de UUID) — previene dobles “pendientes”.
---   • pg_advisory_xact_lock por MOVIMIENTO en enviar/recibir/cancelar.
--- Efectos de ubicación
---   • En recibir, actualiza ubicaciones en equipos/componentes si las columnas existen.
---   • Preflight avisa si faltan.
--- Idempotencia
---   • CREATE OR REPLACE FUNCTION, locks de despliegue y timeouts locales.
+-- F3 · RPC MOVIMIENTOS (COMPLETO · FIX1): crear / enviar / recibir / cancelar
+-- Cambio: en rpc_mov_recibir se reemplazan $$...$$ (string) por '...'
+-- para evitar conflicto con el cuerpo $$ de la función (error "near UPDATE").
+-- Archivo: db/migrations/2025-10-03_01_f3_rpc_movimientos_FIX1.sql
 -- =====================================================================
 
 BEGIN;
--- Lock de despliegue
 SELECT pg_advisory_xact_lock(74123030);
 SET LOCAL search_path = public, app;
 SET LOCAL statement_timeout = '90s';
 SET LOCAL lock_timeout = '5s';
 SET LOCAL client_min_messages = notice;
 
--- Helper: auditoría mínima resiliente
 CREATE OR REPLACE FUNCTION app._audit_min(ev_action text, ev_entity text, ev_id uuid, ev_payload jsonb)
 RETURNS void
 LANGUAGE plpgsql
@@ -55,7 +32,6 @@ EXCEPTION WHEN undefined_table THEN
   NULL;
 END$$;
 
--- RPC: crear movimiento (estado = pendiente)
 CREATE OR REPLACE FUNCTION public.rpc_mov_crear(p jsonb)
 RETURNS uuid
 LANGUAGE plpgsql
@@ -77,11 +53,9 @@ BEGIN
       USING ERRCODE = '22023';
   END IF;
 
-  -- Lock por OBJETO (hash estable de UUID; evita problema de guiones)
   v_lock_key := hashtextextended(v_objeto_id::text, 0);
   PERFORM pg_advisory_xact_lock(v_lock_key);
 
-  -- No permitir más de un "pendiente" por objeto
   SELECT count(*) INTO v_exists
   FROM public.movimientos
   WHERE objeto_tipo = v_objeto_tipo
@@ -110,7 +84,6 @@ BEGIN
   RETURN v_id;
 END$$;
 
--- RPC: enviar (pendiente → enviado)
 CREATE OR REPLACE FUNCTION public.rpc_mov_enviar(p_mov_id uuid)
 RETURNS void
 LANGUAGE plpgsql
@@ -137,7 +110,6 @@ BEGIN
   PERFORM app._audit_min('mov.enviar','movimientos', p_mov_id, NULL);
 END$$;
 
--- RPC: recibir (enviado → recibido) + efectos de ubicación
 CREATE OR REPLACE FUNCTION public.rpc_mov_recibir(p_mov_id uuid)
 RETURNS void
 LANGUAGE plpgsql
@@ -160,7 +132,6 @@ BEGIN
     RAISE EXCEPTION 'solo movimientos en estado enviado pueden recibirse' USING ERRCODE='23514';
   END IF;
 
-  -- ¿Existen columnas de ubicación?
   has_equipos_cols := (to_regclass('public.equipos') IS NOT NULL) AND EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema='public' AND table_name='equipos'
@@ -177,13 +148,13 @@ BEGIN
 
   IF r.objeto_tipo='equipo' AND has_equipos_cols THEN
     sql_txt := format(
-      $$UPDATE public.equipos SET ubicacion=%L, ubicacion_detalle=%L, updated_at=now() WHERE id=%L::uuid$$,
+      'UPDATE public.equipos SET ubicacion=%L, ubicacion_detalle=%L, updated_at=now() WHERE id=%L::uuid',
       r.destino_tipo, r.destino_detalle, r.objeto_id::text
     );
     EXECUTE sql_txt;
   ELSIF r.objeto_tipo='componente' AND has_comp_cols THEN
     sql_txt := format(
-      $$UPDATE public.componentes SET ubicacion=%L, ubicacion_detalle=%L, updated_at=now() WHERE id=%L::uuid$$,
+      'UPDATE public.componentes SET ubicacion=%L, ubicacion_detalle=%L, updated_at=now() WHERE id=%L::uuid',
       r.destino_tipo, r.destino_detalle, r.objeto_id::text
     );
     EXECUTE sql_txt;
@@ -196,7 +167,6 @@ BEGIN
   PERFORM app._audit_min('mov.recibir','movimientos', p_mov_id, NULL);
 END$$;
 
--- RPC: cancelar (pendiente|enviado → cancelado)
 CREATE OR REPLACE FUNCTION public.rpc_mov_cancelar(p_mov_id uuid)
 RETURNS void
 LANGUAGE plpgsql
